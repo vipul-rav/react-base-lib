@@ -1,28 +1,23 @@
-import "whatwg-fetch";
-import "babel-polyfill";
-import React from "react";
-import ReactDOM from "react-dom";
-import { Provider } from "react-redux";
-import App from "./containers/App";
-import { BrowserRouter } from "react-router-dom";
-import { store } from "./redux/store";
-import { fetchConfig, setQueryParams, fetchContent } from "./redux/actions/configActions";
-import queryParser from "./utils/queryParseUtil";
-import setCssUtil from "./utils/setCssUtil";
+import 'whatwg-fetch';
+import 'babel-polyfill';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import App from './containers/App';
+import { BrowserRouter } from 'react-router-dom';
+import { store } from './redux/store';
+import { fetchConfig, fetchContent } from './redux/actions/configActions';
 
-const parsedParams = queryParser();
-store.dispatch(setQueryParams(parsedParams));
-setCssUtil(parsedParams.bank_id);
-
-Promise.all([store.dispatch(fetchConfig()), 
-    store.dispatch(fetchContent())]).then(() => {
+Promise.all([
+    store.dispatch(fetchConfig()),
+    store.dispatch(fetchContent()),
+]).then(() => {
     ReactDOM.render(
         <Provider store={store}>
-            <BrowserRouter >
+            <BrowserRouter>
                 <App />
             </BrowserRouter>
         </Provider>,
-        document.getElementById("base-web-app")
-    )
-})
-
+        document.getElementById('base-web-app')
+    );
+});

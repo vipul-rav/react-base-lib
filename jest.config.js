@@ -1,19 +1,14 @@
-const commonJestConfig = require("./_test/jest.config.json");
-
-// Project specific code coverage override values may appear here
-/*
-const coverageOverrides = {
-    coverageThreshold: {
-        global: {
-            branches: 60,
-            functions: 60,
-            lines: 60,
-            statements: 60,
-        },
+module.exports = {
+    verbose: true,
+    transform: {
+        '\\.(js|jsx)$': 'babel-jest',
     },
-}
-*/
-
-const coverageOverrides = {};
-
-module.exports = Object.assign({}, commonJestConfig, coverageOverrides);
+    moduleFileExtensions: ['js', 'jsx'],
+    testPathIgnorePatterns: ['/cypress/'],
+    setupFilesAfterEnv: ['<rootDir>/src/setUpTests.js'],
+    moduleNameMapper: {
+        '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+            '<rootDir>/dev/jestSupport/jest.fileMock.js',
+        '\\.(css|less)$': '<rootDir>/dev/jestSupport/jest.styleMock.js',
+    },
+};

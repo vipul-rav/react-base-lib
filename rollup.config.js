@@ -1,52 +1,101 @@
-const path = require("path");
-const fs = require("fs");
-const babel = require("rollup-plugin-babel");
-const commonjs = require("rollup-plugin-commonjs");
-const pkg = require("./package.json");
+import path from 'path';
+import babel from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
+import replace from '@rollup/plugin-replace';
+import json from '@rollup/plugin-json';
+import { terser } from 'rollup-plugin-terser';
+import autoExternal from 'rollup-plugin-auto-external';
+import { sizeSnapshot } from 'rollup-plugin-size-snapshot';
+import pkg from './package.json';
 
-const findModulesSubDirectoryExports = modulePath => fs.readdirSync(modulePath).reduce((pathList, curPath) => {
-    const curFullPath = path.join(modulePath, curPath);
-    if (fs.statSync(curFullPath).isDirectory()) {
-        const paths = findModulesSubDirectoryExports(curFullPath);
-        return pathList.concat(paths);
-    } else if (curPath === "index.js") {
-        pathList.push(modulePath.replace("node_modules/", ""));
-    } else if (curPath.endsWith(".js")) {
-        pathList.push(path.join(modulePath.replace("node_modules/", ""), curPath.replace(".js", "")));
-    }
-    return pathList;
-}, []);
-const componentLib = ["web-ui-components/lib", "lodash"];
-const innerModules = componentLib.reduce((pathList, currentModule) =>
-    pathList.concat(findModulesSubDirectoryExports(`node_modules/${currentModule}`)), []);
+const babelRuntime = pkg.dependencies['@babel/runtime'].replace(/^[^0-9]*/, '');
 
-export default {
+const snapshotArgs =
+    process.env.SNAPSHOT === 'match'
+        ? { matchSnapshot: true, threshold: 1000 }
+        : {};
+
+const compileModule = (moduleType) => ({
     input: `${__dirname}/src/index.js`,
-    external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.devDependencies), ...innerModules],
+    //external: [/@babel\/runtime/],
+    external: [
+        ...Object.keys(pkg.dependencies),
+        ...Object.keys(pkg.devDependencies),
+        ...Object.keys(pkg.peerDependencies),
+    ],
     plugins: [
+        autoExternal(),
+        json({
+            exclude: 'node_modules/**',
+            compact: true,
+        }),
+
         babel({
             babelrc: false,
-            exclude: "node_modules/**",
-            presets: ["react", ["env", {
-                modules: false,
-                targets: {
-                    browsers: [
-                        "IE 11",
-                        "last 3 Chrome versions",
-                        "last 2 Edge versions",
-                        "last 2 Firefox versions",
-                        "last 2 Safari versions",
-                        "last 2 ChromeAndroid versions",
-                        "last 2 iOS versions",
-                    ],
-                },
-            }]],
-            plugins: ["transform-object-rest-spread", "external-helpers"],
+            //babelHelpers: 'runtime',
+            exclude: 'node_modules/**',
+            presets: [
+                '@babel/preset-react',
+                [
+                    '@babel/preset-env',
+                    {
+                        modules: false,
+                        loose: true,
+                        useBuiltIns: false,
+                        targets: {
+                            browsers: ['ie>=11'],
+                        },
+                    },
+                ],
+            ],
+            plugins: [
+                '@babel/plugin-proposal-class-properties',
+                // [
+                //     '@babel/plugin-transform-runtime',
+                //     {
+                //         version: babelRuntime,
+                //         useESModules: moduleType === 'esm',
+                //     },
+                // ],
+            ],
         }),
         commonjs(),
     ],
-    output: {
-        file: "lib/index.js",
-        format: "cjs",
+});
+
+const cjsType = compileModule('cjs');
+const esmType = compileModule('esm');
+
+export default [
+    {
+        inlineDynamicImports: true,
+        ...cjsType,
+        plugin: [
+            replace({
+                'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+            }),
+            ...cjsType.plugins,
+            terser({
+                compress: {
+                    side_effects: true,
+                },
+                output: {
+                    preserve_annotations: true,
+                },
+            }),
+            sizeSnapshot(snapshotArgs),
+        ],
+        output: {
+            file: path.join(__dirname, pkg.main),
+            format: 'cjs',
+        },
     },
-};
+    {
+        ...esmType,
+        plugin: [...esmType.plugins, sizeSnapshot(snapshotArgs)],
+        output: {
+            dir: path.join(__dirname, pkg.module),
+            format: 'esm',
+        },
+    },
+];

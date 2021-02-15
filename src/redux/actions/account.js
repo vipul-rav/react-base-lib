@@ -1,12 +1,12 @@
-import { actionTypes, urls } from "../../constants";
-import { RSAA, getJSON } from "redux-api-middleware";
+import { actionTypes, urls } from '../../constants';
+import { RSAA, getJSON } from 'redux-api-middleware';
 
 export const getAccountList = () => ({
     [RSAA]: {
         endpoint: urls.GET_ACCOUNT_LIST,
-        method: "GET",
+        method: 'GET',
         headers: {
-            "x-bpi-version": "0.8.0",
+            'x-bpi-version': '0.8.0',
         },
         types: [
             {
@@ -36,9 +36,9 @@ export const getAccountList = () => ({
 export const getAccountDetails = accountId => ({
     [RSAA]: {
         endpoint: `${urls.GET_ACCOUNT_BY_ID}${accountId}`,
-        method: "GET",
+        method: 'GET',
         headers: {
-            "x-bpi-version": "0.8.0",
+            'x-bpi-version': '0.8.0',
         },
         types: [
             {

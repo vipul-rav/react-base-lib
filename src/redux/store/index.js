@@ -1,11 +1,14 @@
-import { createStore, applyMiddleware, compose } from "redux";
-import { apiUrlMiddleware, nextActionMiddleware, historyMiddleware }from "../../middlewares";
-import { apiMiddleware } from "redux-api-middleware";
-import thunk from "redux-thunk";
-import immutableStateInvariantMiddleware from "redux-immutable-state-invariant";
-import { routerMiddleware } from "react-router-redux";
-import rootReducer from "../reducers";
-import { history }  from "../../routes";
+import { createStore, applyMiddleware, compose } from 'redux';
+import { apiMiddleware } from 'redux-api-middleware';
+import thunk from 'redux-thunk';
+import immutableStateInvariantMiddleware from 'redux-immutable-state-invariant';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import { routerMiddleware } from 'connected-react-router';
+import { apiUrlMiddleware } from '../../middlewares/apiUrlMiddleware';
+import { nextActionMiddleware } from '../../middlewares/nextActionMiddleware';
+import { historyMiddleware } from '../../middlewares/historyMiddleware';
+import { rootReducer } from '../../redux/reducers';
+import { history } from '../../routes';
 
 const allMiddleware = [
     apiUrlMiddleware,
@@ -15,13 +18,16 @@ const allMiddleware = [
     thunk,
 ];
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
     allMiddleware.push(immutableStateInvariantMiddleware());
 }
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
+const composeEnhancers = composeWithDevTools({
+    name: 'Lib App',
+});
+
+const enhancer = [applyMiddleware(...allMiddleware, routerMiddleware(history))];
 export const store = createStore(
-    rootReducer,
-    composeEnhancers(applyMiddleware(...allMiddleware, routerMiddleware(history))),
+    rootReducer(history),
+    composeEnhancers(...enhancer)
 );
-

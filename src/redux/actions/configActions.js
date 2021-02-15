@@ -1,10 +1,10 @@
-import { actionTypes, urls } from "../../constants";
-import { RSAA } from "redux-api-middleware";
+import { actionTypes, urls } from '../../constants';
+import { RSAA } from 'redux-api-middleware';
 
 export const fetchConfig = () => ({
     [RSAA]: {
         endpoint: urls.ENV_CONFIG,
-        method: "GET",
+        method: 'GET',
         types: [
             {
                 type: actionTypes.FETCH_CONFIG,
@@ -34,7 +34,7 @@ export const setQueryParams = params => ({
 export const fetchContent = () => ({
     [RSAA]: {
         endpoint: urls.CONTENT_URL,
-        method: "GET",
+        method: 'GET',
         types: [
             {
                 type: actionTypes.FETCH_CONTENT,
@@ -58,9 +58,9 @@ export const fetchContent = () => ({
 export const getAccountList = () => ({
     [RSAA]: {
         endpoint: urls.GET_ACCOUNT_LIST,
-        method: "GET",
+        method: 'GET',
         headers:{
-            "x-bpi-version": "0.8.0",
+            'x-bpi-version': '0.8.0',
         },
         types: [
             {

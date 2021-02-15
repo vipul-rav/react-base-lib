@@ -1,6 +1,6 @@
-import { actionTypes } from "../../constants";
+import { REDIRECT_SCREEN } from '../../constants/actionTypes';
 
-export const navigateToSample2 = () => ({
-    type: actionTypes.REDIRECT_SAMPLE2,
-    path: "/sample2",
+export const navigateToNextScreen = (nextScreen) => ({
+    type: REDIRECT_SCREEN,
+    path: nextScreen,
 });

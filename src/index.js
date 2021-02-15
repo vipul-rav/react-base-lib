@@ -1,21 +1,28 @@
-import "whatwg-fetch";
-import React, { Component } from "react";
-import { Provider } from "react-redux";
-import App from "./containers/App";
-import { BrowserRouter } from "react-router-dom";
-import { store } from "./redux/store";
+import 'whatwg-fetch';
+import React from 'react';
+import { connect , Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 
-export class BaseAppClass extends Component {
-   
-    render() {
-        return (
-            <Provider store={store}>
-                <BrowserRouter >
-                    <App {...this.props}/>
-                </BrowserRouter>
-            </Provider>
-        );
-    }
-}
+import { App } from './screens/App';
+import { store } from './redux/store';
 
-export default (BaseAppClass);
+const BaseAppClassComponent = ({ ...props }) => {
+    return (
+        <Provider store={store}>
+            <BrowserRouter>
+                <App {...props} />
+            </BrowserRouter>
+        </Provider>
+    );
+};
+
+const mapStateToProps = (state) => {
+    return {
+        loader: state.loader,
+        state,
+    };
+};
+
+const BaseAppClass = connect(mapStateToProps)(BaseAppClassComponent);
+
+export { BaseAppClass };

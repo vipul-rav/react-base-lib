@@ -1,4 +1,4 @@
-const nextActionMiddleware = store => next => (action) => {
+const nextActionMiddleware = (store) => (next) => (action) => {
     if (!action.meta || !action.meta.nextAction) {
         return next(action);
     }
@@ -7,4 +7,4 @@ const nextActionMiddleware = store => next => (action) => {
     return result;
 };
 
-export default nextActionMiddleware;
+export { nextActionMiddleware };

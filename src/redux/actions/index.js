@@ -1,1 +1,1 @@
-export { fetchConfig } from "./configActions";
+export { fetchConfig } from './configActions';
