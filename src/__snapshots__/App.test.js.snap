@@ -9,7 +9,7 @@ Object {
         <header>
           <img
             alt="Logo"
-            src="test-file-stub"
+            src="logo.png"
           />
         </header>
         <div>
@@ -25,7 +25,7 @@ Object {
       <header>
         <img
           alt="Logo"
-          src="test-file-stub"
+          src="logo.png"
         />
       </header>
       <div>

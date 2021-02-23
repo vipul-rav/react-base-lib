@@ -7,15 +7,18 @@ const SampleContainer2 = lazy(() => import('../screens/Sample2'));
 
 const history = createBrowserHistory();
 
-const AppRouter = (
+const AppRouter = ({ defaultRoute = '' }) => {
+  const { pathname } = window.location;
+  return (
     <Router history={history}>
-        <Suspense fallback={<div>Loading...</div>}>
-            <Switch>
-                <Route exact path="/" component={SampleContainer} />
-                <Route path="/sample" component={SampleContainer2} />
-            </Switch>
-        </Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Switch>
+          <Route path={pathname} component={SampleContainer} />
+          <Route path="/libSample1" component={SampleContainer2} />
+        </Switch>
+      </Suspense>
     </Router>
-);
+  );
+};
 
 export { AppRouter, history };

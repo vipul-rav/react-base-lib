@@ -5,41 +5,39 @@ import { render } from '../../../setupTests';
 import { Sample2Container } from '../Sample2Container';
 
 const content = {
-    ExitText: 'Exit',
-    btnContinue: 'Continue',
-    homePageText: 'Home Page',
+  ExitText: 'Exit',
+  btnContinue: 'Continue',
+  homePageText: 'Home Page'
 };
 
 const setup = (overridesProps) => {
-    const props = {
-        content: content,
+  const props = {
+    content: content,
 
-        ...overridesProps,
-    };
+    ...overridesProps
+  };
 
-    const mockStore = configureMockStore();
-    const store = mockStore({
-        config: {
-            externalContent: content,
-        },
-    });
+  const mockStore = configureMockStore();
+  const store = mockStore({
+    config: {
+      externalContent: content
+    }
+  });
 
-    const { container, getByText } = render(
-        <Sample2Container {...props} store={store} />
-    );
+  const { container, getByText } = render(<Sample2Container {...props} store={store} />);
 
-    return {
-        props,
-        container,
-        getByText,
-    };
+  return {
+    props,
+    container,
+    getByText
+  };
 };
 
 describe('Sample2 container', () => {
-    afterEach(cleanup);
-    it('should render', () => {
-        const { container } = setup();
+  afterEach(cleanup);
+  it('should render', () => {
+    const { container } = setup();
 
-        expect(container).toMatchSnapshot();
-    });
+    expect(container).toMatchSnapshot();
+  });
 });
