@@ -15,8 +15,7 @@ const AppComponent = memo(function AppComponent({
   fetchConfig,
   fetchContent,
   configUrl,
-  contentUrl,
-  defaultRoute
+  contentUrl
 }) {
   const [isContentLoaded, updateContentLoaded] = useState(false);
   useEffect(() => {
@@ -33,7 +32,7 @@ const AppComponent = memo(function AppComponent({
       <HeaderComponent />
       <div>
         <ErrorComponent hasError={error.showError} content={content}>
-          <AppRouter defaultRoute={defaultRoute} />
+          <AppRouter />
           <LoaderComponent isLoading={loader.loading} text={'test'} />
         </ErrorComponent>
       </div>
@@ -62,7 +61,8 @@ AppComponent.propTypes = {
     loading: PropTypes.bool
   }),
   error: PropTypes.shape({
-    loading: PropTypes.bool
+    loading: PropTypes.bool,
+    showError: PropTypes.bool
   }),
   content: PropTypes.object.isRequired,
   fetchConfig: PropTypes.func,

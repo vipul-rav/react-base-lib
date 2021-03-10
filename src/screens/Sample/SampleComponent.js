@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { PropTypes } from 'prop-types';
 
 const SampleComponent = memo(({ postList, content }) => (
   <div>
@@ -6,5 +7,10 @@ const SampleComponent = memo(({ postList, content }) => (
     <ul>{postList && postList.map((post) => <li key={post.id}>{post.title}</li>)}</ul>
   </div>
 ));
+
+SampleComponent.propTypes = {
+  postList: PropTypes.array,
+  content: PropTypes.object
+};
 
 export { SampleComponent };

@@ -7,7 +7,7 @@ const SampleContainer2 = lazy(() => import('../screens/Sample2'));
 
 const history = createBrowserHistory();
 
-const AppRouter = ({ defaultRoute = '' }) => {
+const AppRouter = () => {
   const { pathname } = window.location;
   return (
     <Router history={history}>
