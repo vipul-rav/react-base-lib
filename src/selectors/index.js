@@ -1,3 +1,3 @@
-import  * as configSelectors  from "./config";
+import * as configSelectors from './config';
 
-export default configSelectors;
+export { configSelectors };

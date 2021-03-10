@@ -1,11 +1,11 @@
-import { push } from "react-router-redux";
+import { push } from 'connected-react-router';
 
-const historyMiddleware = ({dispatch}) => next => (action) => {
-    const result = next(action);
-    if (action.path) {
-        dispatch(push(action.path));
-    }
-    return result;
+const historyMiddleware = (store) => (next) => (action) => {
+  const result = next(action);
+  if (action.path) {
+    store.dispatch(push(action.path));
+  }
+  return result;
 };
 
-export default historyMiddleware;
+export { historyMiddleware };

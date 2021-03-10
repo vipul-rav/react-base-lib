@@ -1,59 +1,46 @@
-import { isRSAA, RSAA } from "redux-api-middleware";
-import  configSelectors  from "../selectors";
+import axios from 'axios';
+import { configSelectors } from '../selectors';
 
-const apiUrlMiddleware = store => next => (action) => {
-    if (!isRSAA(action)) {
-        return next(action);
-    }
+const apiUrlMiddleware = (store) => (next) => async (action) => {
+  const result = await next(action);
+  const { payload } = action;
+  if (!payload || !payload.endpoint) {
+    return result;
+  }
 
-    const storeState = store.getState();
-    
-    const accessToken = configSelectors.accessToken(storeState);
+  const { endpoint, method, onSuccess, onFailure, body } = payload;
 
-    const urlSelectors = {
-        "apiBaseUrl": configSelectors.apiBaseUrl,
-        "bankId": configSelectors.bankId,
-    };
+  const storeState = store.getState();
 
-    const endpoint = Object.keys(urlSelectors).reduce(
-        (curEndpoint, selectorKey) => curEndpoint.replace(selectorKey, urlSelectors[selectorKey](storeState)),
-        action[RSAA].endpoint
-    );
+  const urlSelectors = {
+    apiUrl: configSelectors.apiUrl
+  };
 
-    const clientContext = {
-        env: {
-            platform : `${configSelectors.bankId(storeState)} Web`,
-            platform_version:  navigator.appVersion || navigator.vendor || window.opera,
-            make: navigator.platform || window.opera,
-        },
-        client: {
-            app_title:  `${configSelectors.bankId(storeState)} Web`,
-            user_tracking_id:"b251d9400fcbfe728866b60a69f6bf32",
-        },
-    };
+  const newEndpoint = Object.keys(urlSelectors).reduce(
+    (curEndpoint, selectorKey) => curEndpoint.replace(selectorKey, urlSelectors[selectorKey](storeState)),
+    endpoint
+  );
 
-    const headers = {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "x-bpi-client-context": JSON.stringify(clientContext),
-        "x-bpi-service-context":"USER",
-    };
+  const headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  };
 
-    if (accessToken) {
-        headers.Authorization = `Bearer ${accessToken}`;
-    }
-
-    return next({
-        ...action,
-        [RSAA]: {
-            ...action[RSAA],
-            headers: {
-                ...action[RSAA].headers,
-                ...headers,
-            },
-            endpoint,
-        },
+  try {
+    const response = await axios.request({
+      url: newEndpoint,
+      method,
+      headers,
+      ...(body && { data: JSON.stringify(body) })
     });
+    if (response.status === 200) {
+      store.dispatch(onSuccess(response.data));
+    } else {
+      store.dispatch(onFailure(response.data));
+    }
+  } catch (error) {
+    store.dispatch(onFailure(error));
+  }
 };
 
-export default apiUrlMiddleware;
+export { apiUrlMiddleware };

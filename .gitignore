@@ -3,6 +3,7 @@
 
 # Node / NPM
 node_modules
+node_modules_offline
 npm-debug.log*
 
 # Caches
@@ -15,3 +16,5 @@ coverage/*
 !coverage/.gitkeep
 dist/*
 !dist/.gitkeep
+lib
+esm

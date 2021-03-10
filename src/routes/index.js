@@ -1,16 +1,24 @@
-import React from "react";
-import { Route, Switch, Router } from "react-router-dom";
-import { createBrowserHistory } from "history";
-import SampleContainer  from "../containers/SampleContainer";
-import SampleContainer2 from "../containers/SampleContainer2";
+import React, { lazy, Suspense } from 'react';
+import { Route, Switch, Router } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 
-export const history = createBrowserHistory();
+const SampleContainer = lazy(() => import('../screens/Sample'));
+const SampleContainer2 = lazy(() => import('../screens/Sample2'));
 
-const routes = <Router history={history}>
-    <Switch>
-        <Route exact path="/" component={SampleContainer} />
-        <Route path="/sample2" component={SampleContainer2} />
-    </Switch>
-</Router>;
+const history = createBrowserHistory();
 
-export default routes;
+const AppRouter = () => {
+  const { pathname } = window.location;
+  return (
+    <Router history={history}>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Switch>
+          <Route path={pathname} component={SampleContainer} />
+          <Route path="/libSample1" component={SampleContainer2} />
+        </Switch>
+      </Suspense>
+    </Router>
+  );
+};
+
+export { AppRouter, history };
